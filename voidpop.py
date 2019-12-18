@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Dummy POP3 server that accepts any login and never has any messages"""
 from __future__ import annotations
 
 import argparse
@@ -9,7 +10,7 @@ import socket
 import time
 from functools import partial
 from itertools import count
-from typing import List
+from typing import List, Optional
 
 import trio
 
@@ -26,9 +27,15 @@ def parse_args():
     return parser.parse_args()
 
 
-async def main(port: int) -> None:
+def main():
+    args = parse_args()
+    logging.basicConfig(
+        datefmt="%Y-%m-%d %H:%M:%S",
+        format=f"%(asctime)s.%(msecs)03d %(message)s",
+        level=logging.DEBUG if args.verbose else logging.INFO,
+    )
     try:
-        await trio.serve_tcp(handler, port)
+        trio.run(trio.serve_tcp, handler, args.port)
     except KeyboardInterrupt:
         return
 
@@ -104,7 +111,9 @@ async def handler(stream: trio.SocketStream) -> None:
     try:
         await stream.send_all(pop3.banner())
         async for data in stream:
-            command, *args = data.decode("ascii", errors="replace").rstrip("\r\n").split(" ")
+            command, *args = (
+                data.decode("ascii", errors="replace").rstrip("\r\n").split(" ")
+            )
             command = command.upper()
             response = pop3.handle(command, args)
             await stream.send_all(response)
@@ -115,14 +124,3 @@ async def handler(stream: trio.SocketStream) -> None:
     except Exception:
         logger.warning("[%s] Crashed", id, exc_info=True)
     logger.debug("[%s] Connection closed", id)
-
-
-if __name__ == "__main__":
-    args = parse_args()
-    logging.basicConfig(
-        datefmt="%Y-%m-%d %H:%M:%S",
-        format=f"%(asctime)s.%(msecs)03d %(message)s",
-        level=logging.DEBUG if args.verbose else logging.INFO,
-    )
-    del args.verbose
-    trio.run(partial(main, **vars(args)))
