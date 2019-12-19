@@ -1,7 +1,15 @@
-# voidpop
+# Voidpop
 
 Voidpop is a dummy POP3 server. It accepts any username/password and always
 reports that there are no messages.
+
+## Why??
+
+I found myself in a situation where I needed someone to send some emails via a
+particular SMTP account, but there was no corresponding incoming mail account.
+Their email client refused to even try to connect to the SMTP server if it
+couldn't first sync the mailbox from an incoming mail server. I didn't find any
+existing dummy POP3 or IMAP services, and POP3 looked simpler to implement.
 
 ## Using pop.voidpop.org
 
