@@ -1,6 +1,6 @@
 # Voidpop
 
-Voidpop is a dummy POP3 server. It accepts any username/password and always
+**Voidpop** is a dummy POP3 server. It accepts any username/password and always
 reports that there are no messages.
 
 ## Why??
@@ -18,8 +18,8 @@ and the server will report that you have 0 messages.
 
 ## Running your own instance
 
+Install <a href=https://docs.astral.sh/uv/ rel=external target=_blank>uv</a>, then use:
+
 ```bash
-$ python3 -m venv env
-$ env/bin/pip install voidpop
-$ env/bin/voidpop --help
+$ uvx voidpop
 ```
